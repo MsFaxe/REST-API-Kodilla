@@ -23,9 +23,6 @@ public class SimpleEmailService {
         LOGGER.info("Starting email preparation...");
         try {
             SimpleMailMessage mailMessage = createMailMessage(mail);
-            if (!ofNullable(mail.getToCc()).isPresent()) {
-                LOGGER.error("No additional recipients");
-            }
             javaMailSender.send(mailMessage);
             LOGGER.info("Email has been sent.");
         } catch (MailException e) {
@@ -38,7 +35,13 @@ public class SimpleEmailService {
         mailMessage.setTo(mail.getMailTo());
         mailMessage.setSubject(mail.getSubject());
         mailMessage.setText(mail.getMessage());
-        mailMessage.setCc(mail.getToCc());
+        if (ofNullable(mail.getToCc()).isPresent()) {
+            mailMessage.setCc(mail.getToCc());
+        } else {
+            mailMessage.setCc((String) null);
+            LOGGER.error("No additional recipients");
+        }
+
         return mailMessage;
     }
 }
