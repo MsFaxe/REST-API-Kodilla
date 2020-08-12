@@ -22,7 +22,7 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 
-	implementation 'mysql:mysql-connector-java'
+	compile 'mysql:mysql-connector-java'
 	//compile('org.postgresql:postgresql')
 
 	implementation 'org.projectlombok:lombok:1.18.12'

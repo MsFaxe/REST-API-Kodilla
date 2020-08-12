@@ -37,12 +37,12 @@ public class SimpleEmailService {
         mailMessage.setText(mail.getMessage());
 
         //mailMessage.setCc(ofNullable(mail.getToCc()).orElse(new String()));
-        if (ofNullable(mail.getToCc()).isPresent()) {
-            mailMessage.setCc(mail.getToCc());
-        } else {
-            mailMessage.setCc((String) null);
-            LOGGER.error("No additional recipients");
-        }
+//        if (ofNullable(mail.getToCc()).isPresent()) {
+//            mailMessage.setCc(mail.getToCc());
+//        } else {
+//            mailMessage.setCc((String) null);
+//            LOGGER.error("No additional recipients");
+//        }
 
         return mailMessage;
     }
