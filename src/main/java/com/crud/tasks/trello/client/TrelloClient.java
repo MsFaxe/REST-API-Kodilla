@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 import static java.util.Optional.ofNullable;
 
-
 @Component
 public class TrelloClient {
 
