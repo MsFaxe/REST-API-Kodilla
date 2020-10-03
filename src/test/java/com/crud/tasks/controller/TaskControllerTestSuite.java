@@ -9,6 +9,7 @@ import com.crud.tasks.service.DbService;
 import com.google.gson.Gson;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -63,34 +64,28 @@ public class TaskControllerTestSuite {
     public void shouldFetchTask() throws Exception {
         //Given
         TaskDto taskDto = new TaskDto(1L, "title", "content");
-        List<TaskDto> tasksList = new ArrayList<>();
-        tasksList.add(taskDto);
 
-        when(taskMapper.mapToTaskDtoList(anyList())).thenReturn(tasksList);
+        Task task = new Task(1L, "title", "content");
+
+        when(dbService.findTaskById(any())).thenReturn(java.util.Optional.of(task));
         when(taskMapper.mapToTaskDto(any(Task.class))).thenReturn(taskDto);
 
-        Gson gson = new Gson();
-        String jsonContent = gson.toJson(tasksList);
-
         //When & Then
-        mockMvc.perform(get("/v1/taskDto/getTask")
+        mockMvc.perform(get("/v1/task/getTask")
                 .param("taskId", "1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("UTF-8")
-                .content(jsonContent))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[0].title", is("title")))
-                .andExpect(jsonPath("$[0].content", is("content")));
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.title", is("title")))
+                .andExpect(jsonPath("$.content", is("content")));
     }
 
     @Test
     public void shouldUpdateTask() throws Exception {
         //Given
-        Task task = new Task(1L, "title", "content");
+        TaskDto task = new TaskDto(1L, "title", "content");
 
-        when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
+        when(taskMapper.mapToTaskDto(any(Task.class))).thenReturn(task);
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson(task);
@@ -117,29 +112,16 @@ public class TaskControllerTestSuite {
                 .characterEncoding("UTF-8")
                 .content(jsonContent))
                 .andExpect(status().isOk());
+        Mockito.verify(dbService, Mockito.times(1)).saveTask(task);
     }
 
     @Test
     public void shouldDeleteTask() throws Exception{
-        //Given
-        TaskDto taskDto = new TaskDto(1L, "title", "content");
-        List<TaskDto> tasksList = new ArrayList<>();
-        tasksList.add(taskDto);
-
-//        Task task = new Task(1L, "title", "content");
-//        when(taskMapper.mapToTask(any(TaskDto.class))).thenReturn(task);
-//        when(taskMapper.mapToTaskDtoList(anyList())).thenReturn(tasksList);
-//        when(taskDto.getId()).thenReturn(1L);
-//        dbService.saveTask(task);
-
-        Gson gson = new Gson();
-        String jsonContent = gson.toJson(tasksList);
-        //When & Then
         mockMvc.perform(delete("/v1/task/deleteTask")
                 .param("taskId", "1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("UTF-8")
-                .content(jsonContent))
+                .characterEncoding("UTF-8"))
                 .andExpect(status().isOk());
+        Mockito.verify(dbService, Mockito.times(1)).delete(1);
     }
 }
