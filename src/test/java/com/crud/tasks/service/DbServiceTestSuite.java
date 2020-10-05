@@ -4,6 +4,7 @@ import com.crud.tasks.domain.Task;
 import com.crud.tasks.repository.TaskRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -15,7 +16,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DbServiceTestSuite {
-    @Mock
+    @InjectMocks
     private DbService dbService;
     @Mock
     private TaskRepository repository;
@@ -25,10 +26,10 @@ public class DbServiceTestSuite {
         //Given
         when(repository.findAll()).thenReturn(new ArrayList<>());
         //When
-        dbService.getAllTasks();
+
         //Then
-        assertEquals(0, repository.findAll().size());
-        verify(dbService, times(1)).getAllTasks();
+        assertEquals(0, dbService.getAllTasks().size());
+        verify(repository, times(1)).findAll();
     }
 
     @Test
@@ -43,7 +44,7 @@ public class DbServiceTestSuite {
         assertEquals("title", foundTask.getTitle());
         assertEquals("content", foundTask.getContent());
         assertEquals(Optional.of(1L), Optional.of(foundTask.getId()));
-        verify(dbService, times(1)).findTaskById(1L);
+        verify(repository, times(1)).findById(1L);
     }
 
     @Test
@@ -53,7 +54,7 @@ public class DbServiceTestSuite {
         //When
         dbService.saveTask(task);
         //Then
-        verify(dbService, times(1)).saveTask(task);
+        verify(repository, times(1)).save(task);
     }
 
     @Test
@@ -63,6 +64,6 @@ public class DbServiceTestSuite {
         //When
         dbService.delete(1L);
         //Then
-        verify(dbService, times(1)).delete(1L);
+        verify(repository, times(1)).deleteById(1L);
     }
 }
